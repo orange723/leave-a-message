@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="site-header">
+        <h1 class="title">Leave a Message</h1>
+        <p class="subtitle">A tiny, minimal guestbook — simple and fast.</p>
+      </header>
+
+      <section class="card">
+        <form id="msgForm" class="form" autocomplete="off" onsubmit="event.preventDefault();">
+          <label for="message" class="sr">Your message</label>
+          <textarea id="message" name="message" rows="3" placeholder="Say something kind..." required></textarea>
+          <div class="actions">
+            <button type="submit" class="btn">Post</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card messages">
+        <h2 class="section-title">Recent</h2>
+        <ul id="messagesList" class="list"></ul>
+        <div id="empty" class="empty">No messages yet — be the first.</div>
+        <div style="display:flex;justify-content:center;margin-top:12px">
+          <button id="loadMoreBtn" class="btn" style="background:#111827">Load more</button>
+        </div>
+      </section>
+
+      <footer class="site-footer">&copy; 2025</footer>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

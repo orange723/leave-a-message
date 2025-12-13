@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 	"os"
+	"bytes"
+	"html/template"
 
 	"leave-a-message/database"
 	"leave-a-message/pkg"
@@ -31,6 +33,9 @@ func setupMiddlewares(app *fiber.App) {
 func Create() *fiber.App {
 	database.SetupDatabase()
 
+	// Parse templates with standard library
+	tmpl := template.Must(template.ParseGlob("./templates/*.html"))
+
 	app := fiber.New(fiber.Config{
 		// Override default error handler
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
@@ -46,8 +51,18 @@ func Create() *fiber.App {
 
 	setupMiddlewares(app)
 
+	// Serve static assets from ./static
+	app.Static("/static", "./static")
+
+	// Render minimal Cloudflare-style frontend
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("OK")
+		data := map[string]interface{}{"Title": "Leave a Message"}
+		var buf bytes.Buffer
+		if err := tmpl.ExecuteTemplate(&buf, "index.html", data); err != nil {
+			return err
+		}
+		c.Type("html", "utf-8")
+		return c.SendString(buf.String())
 	})
 
 	return app

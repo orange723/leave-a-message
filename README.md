@@ -80,6 +80,22 @@ go run main.go
 
 API 服务将会运行在 `http://localhost:3000` (或您在 `.env` 文件中指定的端口)。
 
+## 前端页面
+
+项目包含一个极简前端页面，渲染在根路径 `/`，提供留言发布与“加载更多”分页：
+
+- 打开： `http://localhost:3000/`。
+- 特性：简约 Cloudflare 风格，留言以每页 10 条向下追加（Load more）。
+- 目录：模板位于 `templates/`，静态资源位于 `static/`（`styles.css`、`app.js`）。
+
+注意：某些浏览器扩展（例如 MetaMask）会注入内容脚本并通过 `window.postMessage` 与页面通信，极少数情况下会触发自动请求导致重复插入。遇到异常重复插入时，可以：
+
+- 使用浏览器的无痕/隐身窗口（通常会禁用扩展）复现；
+- 临时禁用可疑扩展再刷新页面；
+- 在 DevTools → Network 查看重复 POST 的 initiator 来定位来源。
+
+前端行为说明：页面使用 AJAX 向 `/api/v1/message` 提交，只有用户点击“Post”时才会发送插入请求；页面初次加载或点击“Load more”仅执行 GET 请求。
+
 ### 6. 填充数据 (可选)
 
 项目提供了一个 shell 脚本，可以向数据库中填充 1000 条示例留言。
