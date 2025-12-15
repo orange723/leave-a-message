@@ -106,10 +106,6 @@ API 服务将会运行在 `http://localhost:3000` (或您在 `.env` 文件中指
 ALTER TABLE messages ADD INDEX idx_messages_created_at (created_at);
 ```
 
-```sql
-ALTER TABLE messages ADD INDEX idx_messages_created_at (created_at);
-```
-
 验证索引和查询计划：
 
 ```sql
