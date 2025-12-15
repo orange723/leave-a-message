@@ -3,8 +3,6 @@ package server
 import (
 	"fmt"
 	"os"
-	"bytes"
-	"html/template"
 
 	"leave-a-message/database"
 	"leave-a-message/pkg"
@@ -12,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html/v2"
 )
 
 func setupMiddlewares(app *fiber.App) {
@@ -33,10 +32,12 @@ func setupMiddlewares(app *fiber.App) {
 func Create() *fiber.App {
 	database.SetupDatabase()
 
-	// Parse templates with standard library
-	tmpl := template.Must(template.ParseGlob("./templates/*.html"))
+	// Setup fiber html template engine (official)
+	engine := html.New("./templates", ".html")
+	// optional for development: engine.Reload(true)
 
 	app := fiber.New(fiber.Config{
+		Views: engine,
 		// Override default error handler
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			if e, ok := err.(*pkg.Error); ok {
@@ -54,15 +55,9 @@ func Create() *fiber.App {
 	// Serve static assets from ./static
 	app.Static("/static", "./static")
 
-	// Render minimal Cloudflare-style frontend
+	// Render minimal Cloudflare-style frontend using ctx.Render
 	app.Get("/", func(c *fiber.Ctx) error {
-		data := map[string]interface{}{"Title": "Leave a Message"}
-		var buf bytes.Buffer
-		if err := tmpl.ExecuteTemplate(&buf, "index.html", data); err != nil {
-			return err
-		}
-		c.Type("html", "utf-8")
-		return c.SendString(buf.String())
+		return c.Render("index", fiber.Map{"Title": "Leave a Message"})
 	})
 
 	return app
