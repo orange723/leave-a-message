@@ -1,0 +1,39 @@
+services:
+
+  message:
+    build:
+      context: .
+      platforms:
+        - linux/amd64
+    image: message:{{date "20060102-150405" "Local"}}
+    configs:
+      - source: app_config
+        target: /app/.env
+        mode: 0644
+
+  db:
+    image: docker.1ms.run/library/mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: message
+    x-ports:
+      - 3306:3306/tcp@host
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+
+configs:
+  app_config:
+    content: |
+      SERVER_HOST=0.0.0.0
+      SERVER_PORT=3000
+
+      ENABLE_LOGGER=true
+
+      MYSQL_USER=root
+      MYSQL_PASSWORD=12345678
+      MYSQL_HOST=db
+      MYSQL_DB=message
